@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/token_lottery.json`.
  */
 export type TokenLottery = {
-  "address": "JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H",
+  "address": "7BGduEL66H36gUVr83ReQ6E1bLhSrWxhKJZKUoQ8vqH9",
   "metadata": {
     "name": "tokenLottery",
     "version": "0.1.0",
@@ -62,7 +62,20 @@ export type TokenLottery = {
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "start",
+          "type": "u64"
+        },
+        {
+          "name": "end",
+          "type": "u64"
+        },
+        {
+          "name": "price",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -95,7 +108,7 @@ export type TokenLottery = {
             "type": "u64"
           },
           {
-            "name": "winnerClaimed",
+            "name": "winnerChosen",
             "type": "bool"
           },
           {

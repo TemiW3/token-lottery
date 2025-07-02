@@ -1,27 +1,33 @@
+import * as anchor from '@coral-xyz/anchor'
+import { Program } from '@coral-xyz/anchor'
+import { TokenLottery } from '../target/types/token_lottery'
+import { console } from 'inspector'
+
 describe('tokenlottery', () => {
-  // TODO: Implement tests for the tokenlottery program based on the Codama generated client.
-  // Use tests in `legacy/legacy-next-tailwind-tokenlottery/anchor/tests/tokenlottery.test.ts` as a reference.
-  it.skip('Initialize Tokenlottery', async () => {
-    expect(true).toBe(true)
-  })
+  const provider = anchor.AnchorProvider.env()
+  anchor.setProvider(provider)
+  const wallet = provider.wallet as anchor.Wallet
 
-  it.skip('Increment Tokenlottery', async () => {
-    expect(true).toBe(true)
-  })
+  const program = anchor.workspace.TokenLottery as Program<TokenLottery>
 
-  it.skip('Increment Tokenlottery Again', async () => {
-    expect(true).toBe(true)
-  })
+  it('Should init config', async () => {
+    const initConfigInstruction = await program.methods
+      .initializeConfig(new anchor.BN(0), new anchor.BN(1822712025), new anchor.BN(10000))
+      .instruction()
 
-  it.skip('Decrement Tokenlottery', async () => {
-    expect(true).toBe(true)
-  })
+    const blockhashWithContext = await provider.connection.getLatestBlockhash()
 
-  it.skip('Set tokenlottery value', async () => {
-    expect(true).toBe(true)
-  })
+    const tx = new anchor.web3.Transaction({
+      feePayer: provider.wallet.publicKey,
+      blockhash: blockhashWithContext.blockhash,
+      lastValidBlockHeight: blockhashWithContext.lastValidBlockHeight,
+    }).add(initConfigInstruction)
 
-  it.skip('Set close the tokenlottery account', async () => {
-    expect(true).toBe(true)
+    console.log('Transaction:', tx)
+
+    const signature = await anchor.web3.sendAndConfirmTransaction(provider.connection, tx, [wallet.payer], {
+      skipPreflight: true,
+    })
+    console.log('Transaction Signature:', signature)
   })
 })
