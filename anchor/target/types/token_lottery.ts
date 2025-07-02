@@ -14,16 +14,16 @@ export type TokenLottery = {
   },
   "instructions": [
     {
-      "name": "close",
+      "name": "initializeConfig",
       "discriminator": [
-        98,
-        165,
-        201,
-        177,
-        108,
-        65,
-        206,
-        96
+        208,
+        127,
+        21,
+        1,
+        194,
+        190,
+        196,
+        70
       ],
       "accounts": [
         {
@@ -32,74 +32,30 @@ export type TokenLottery = {
           "signer": true
         },
         {
-          "name": "tokenlottery",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "decrement",
-      "discriminator": [
-        106,
-        227,
-        168,
-        59,
-        248,
-        27,
-        150,
-        101
-      ],
-      "accounts": [
-        {
-          "name": "tokenlottery",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "increment",
-      "discriminator": [
-        11,
-        18,
-        104,
-        9,
-        104,
-        174,
-        59,
-        33
-      ],
-      "accounts": [
-        {
-          "name": "tokenlottery",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initialize",
-      "discriminator": [
-        175,
-        175,
-        109,
-        31,
-        13,
-        152,
-        155,
-        237
-      ],
-      "accounts": [
-        {
-          "name": "payer",
+          "name": "tokenLottery",
           "writable": true,
-          "signer": true
-        },
-        {
-          "name": "tokenlottery",
-          "writable": true,
-          "signer": true
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  108,
+                  111,
+                  116,
+                  116,
+                  101,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "systemProgram",
@@ -107,31 +63,6 @@ export type TokenLottery = {
         }
       ],
       "args": []
-    },
-    {
-      "name": "set",
-      "discriminator": [
-        198,
-        51,
-        53,
-        241,
-        116,
-        29,
-        126,
-        194
-      ],
-      "accounts": [
-        {
-          "name": "tokenlottery",
-          "writable": true
-        }
-      ],
-      "args": [
-        {
-          "name": "value",
-          "type": "u8"
-        }
-      ]
     }
   ],
   "accounts": [
@@ -156,8 +87,44 @@ export type TokenLottery = {
         "kind": "struct",
         "fields": [
           {
-            "name": "count",
+            "name": "bump",
             "type": "u8"
+          },
+          {
+            "name": "winner",
+            "type": "u64"
+          },
+          {
+            "name": "winnerClaimed",
+            "type": "bool"
+          },
+          {
+            "name": "startTime",
+            "type": "u64"
+          },
+          {
+            "name": "endTime",
+            "type": "u64"
+          },
+          {
+            "name": "lotteryPot",
+            "type": "u64"
+          },
+          {
+            "name": "ticketPrice",
+            "type": "u64"
+          },
+          {
+            "name": "ticketCount",
+            "type": "u64"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "randomnessAccount",
+            "type": "pubkey"
           }
         ]
       }

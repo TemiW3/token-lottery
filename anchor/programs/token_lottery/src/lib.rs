@@ -1,4 +1,5 @@
 #![allow(clippy::result_large_err)]
+#![allow(unexpected_cfgs)]
 
 use anchor_lang::prelude::*;
 
@@ -8,63 +9,41 @@ declare_id!("JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H");
 pub mod token_lottery {
     use super::*;
 
-    pub fn close(_ctx: Context<CloseTokenlottery>) -> Result<()> {
+    pub fn initialize_config(ctx: Context<Initialize>) -> Result<()> {
         Ok(())
     }
 
-    pub fn decrement(ctx: Context<Update>) -> Result<()> {
-        ctx.accounts.tokenlottery.count = ctx.accounts.tokenlottery.count.checked_sub(1).unwrap();
-        Ok(())
-    }
+   
 
-    pub fn increment(ctx: Context<Update>) -> Result<()> {
-        ctx.accounts.tokenlottery.count = ctx.accounts.tokenlottery.count.checked_add(1).unwrap();
-        Ok(())
-    }
-
-    pub fn initialize(_ctx: Context<InitializeTokenlottery>) -> Result<()> {
-        Ok(())
-    }
-
-    pub fn set(ctx: Context<Update>, value: u8) -> Result<()> {
-        ctx.accounts.tokenlottery.count = value.clone();
-        Ok(())
-    }
 }
 
 #[derive(Accounts)]
-pub struct InitializeTokenlottery<'info> {
+pub struct Initialize<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
     #[account(
   init,
   space = 8 + Tokenlottery::INIT_SPACE,
-  payer = payer
+  payer = payer,
+  seeds = [b"token_lottery".as_ref()],
+  bump,
     )]
-    pub tokenlottery: Account<'info, Tokenlottery>,
+    pub token_lottery: Account<'info, Tokenlottery>,
     pub system_program: Program<'info, System>,
-}
-#[derive(Accounts)]
-pub struct CloseTokenlottery<'info> {
-    #[account(mut)]
-    pub payer: Signer<'info>,
-
-    #[account(
-  mut,
-  close = payer, // close account and return lamports to payer
-    )]
-    pub tokenlottery: Account<'info, Tokenlottery>,
-}
-
-#[derive(Accounts)]
-pub struct Update<'info> {
-    #[account(mut)]
-    pub tokenlottery: Account<'info, Tokenlottery>,
 }
 
 #[account]
 #[derive(InitSpace)]
 pub struct Tokenlottery {
-    count: u8,
+    pub bump: u8,
+    pub winner: u64,
+    pub winner_claimed: bool,
+    pub start_time: u64,
+    pub end_time: u64,
+    pub lottery_pot: u64,
+    pub ticket_price: u64,
+    pub ticket_count: u64,
+    pub authority: Pubkey,
+    pub randomness_account: Pubkey,
 }
