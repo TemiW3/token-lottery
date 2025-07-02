@@ -5,108 +5,162 @@
  * IDL can be found at `target/idl/tokenlottery.json`.
  */
 export type Tokenlottery = {
-  address: 'JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H'
-  metadata: {
-    name: 'tokenlottery'
-    version: '0.1.0'
-    spec: '0.1.0'
-    description: 'Created with Anchor'
-  }
-  instructions: [
+  "address": "JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H",
+  "metadata": {
+    "name": "tokenlottery",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
     {
-      name: 'close'
-      discriminator: [98, 165, 201, 177, 108, 65, 206, 96]
-      accounts: [
+      "name": "close",
+      "discriminator": [
+        98,
+        165,
+        201,
+        177,
+        108,
+        65,
+        206,
+        96
+      ],
+      "accounts": [
         {
-          name: 'payer'
-          writable: true
-          signer: true
+          "name": "payer",
+          "writable": true,
+          "signer": true
         },
         {
-          name: 'tokenlottery'
-          writable: true
-        },
-      ]
-      args: []
+          "name": "tokenlottery",
+          "writable": true
+        }
+      ],
+      "args": []
     },
     {
-      name: 'decrement'
-      discriminator: [106, 227, 168, 59, 248, 27, 150, 101]
-      accounts: [
+      "name": "decrement",
+      "discriminator": [
+        106,
+        227,
+        168,
+        59,
+        248,
+        27,
+        150,
+        101
+      ],
+      "accounts": [
         {
-          name: 'tokenlottery'
-          writable: true
-        },
-      ]
-      args: []
+          "name": "tokenlottery",
+          "writable": true
+        }
+      ],
+      "args": []
     },
     {
-      name: 'increment'
-      discriminator: [11, 18, 104, 9, 104, 174, 59, 33]
-      accounts: [
+      "name": "increment",
+      "discriminator": [
+        11,
+        18,
+        104,
+        9,
+        104,
+        174,
+        59,
+        33
+      ],
+      "accounts": [
         {
-          name: 'tokenlottery'
-          writable: true
-        },
-      ]
-      args: []
+          "name": "tokenlottery",
+          "writable": true
+        }
+      ],
+      "args": []
     },
     {
-      name: 'initialize'
-      discriminator: [175, 175, 109, 31, 13, 152, 155, 237]
-      accounts: [
+      "name": "initialize",
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [
         {
-          name: 'payer'
-          writable: true
-          signer: true
+          "name": "payer",
+          "writable": true,
+          "signer": true
         },
         {
-          name: 'tokenlottery'
-          writable: true
-          signer: true
+          "name": "tokenlottery",
+          "writable": true,
+          "signer": true
         },
         {
-          name: 'systemProgram'
-          address: '11111111111111111111111111111111'
-        },
-      ]
-      args: []
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     },
     {
-      name: 'set'
-      discriminator: [198, 51, 53, 241, 116, 29, 126, 194]
-      accounts: [
+      "name": "set",
+      "discriminator": [
+        198,
+        51,
+        53,
+        241,
+        116,
+        29,
+        126,
+        194
+      ],
+      "accounts": [
         {
-          name: 'tokenlottery'
-          writable: true
-        },
-      ]
-      args: [
+          "name": "tokenlottery",
+          "writable": true
+        }
+      ],
+      "args": [
         {
-          name: 'value'
-          type: 'u8'
-        },
+          "name": "value",
+          "type": "u8"
+        }
       ]
-    },
-  ]
-  accounts: [
+    }
+  ],
+  "accounts": [
     {
-      name: 'tokenlottery'
-      discriminator: [255, 176, 4, 245, 188, 253, 124, 25]
-    },
-  ]
-  types: [
+      "name": "tokenlottery",
+      "discriminator": [
+        74,
+        58,
+        192,
+        252,
+        195,
+        32,
+        241,
+        219
+      ]
+    }
+  ],
+  "types": [
     {
-      name: 'tokenlottery'
-      type: {
-        kind: 'struct'
-        fields: [
+      "name": "tokenlottery",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
-            name: 'count'
-            type: 'u8'
-          },
+            "name": "count",
+            "type": "u8"
+          }
         ]
       }
-    },
+    }
   ]
-}
+};
