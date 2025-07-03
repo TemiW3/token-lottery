@@ -17,7 +17,7 @@ pub const NAME: &str = "Token Lottery Ticket #";
 #[constant]
 pub const SYMBOL: &str = "TOK";
 #[constant]
-pub const URI: &str = "https://i.guim.co.uk/img/media/b78eba8720659708cba9c1c5338a7e7773a56446/0_85_4288_2572/master/4288.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=1997f5ce90231b9dd753f9e04e4a9dd5";
+pub const URI: &str = "https://raw.githubusercontent.com/TemiW3/token-lottery/refs/heads/main/metadata.json";
 
 #[program]
 pub mod token_lottery {
