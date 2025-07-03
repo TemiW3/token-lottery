@@ -22,6 +22,11 @@ pub mod token_lottery {
         Ok(())
     }
 
+    pub fn initialize_lottery(ctx: Context<InitializeLottery>) -> Result<()> {
+       
+        Ok(())
+    }
+
    
 
 }
@@ -39,6 +44,16 @@ pub struct Initialize<'info> {
   bump,
     )]
     pub token_lottery: Account<'info, Tokenlottery>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct InitializeLottery<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+
+    
+    
     pub system_program: Program<'info, System>,
 }
 
