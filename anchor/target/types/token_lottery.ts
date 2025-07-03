@@ -255,6 +255,10 @@ export type TokenLottery = {
         {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
         }
       ],
       "args": []
@@ -323,6 +327,23 @@ export type TokenLottery = {
           }
         ]
       }
+    }
+  ],
+  "constants": [
+    {
+      "name": "name",
+      "type": "string",
+      "value": "\"Token Lottery Ticket #\""
+    },
+    {
+      "name": "symbol",
+      "type": "string",
+      "value": "\"TOK\""
+    },
+    {
+      "name": "uri",
+      "type": "string",
+      "value": "\"https://i.guim.co.uk/img/media/b78eba8720659708cba9c1c5338a7e7773a56446/0_85_4288_2572/master/4288.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=1997f5ce90231b9dd753f9e04e4a9dd5\""
     }
   ]
 };
