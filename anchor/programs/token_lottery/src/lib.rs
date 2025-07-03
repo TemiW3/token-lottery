@@ -2,6 +2,8 @@
 #![allow(unexpected_cfgs)]
 
 use anchor_lang::prelude::*;
+use anchor_spl::{
+    associated_token::AssociatedToken, metadata::Metadata, token_interface::{Mint, TokenAccount, TokenInterface}};
 
 declare_id!("7BGduEL66H36gUVr83ReQ6E1bLhSrWxhKJZKUoQ8vqH9");
 
@@ -52,8 +54,48 @@ pub struct InitializeLottery<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
-    
-    
+    #[account(
+        init,
+        payer = payer,
+        mint::decimals = 0,
+        mint::authority = collection_mint,
+        mint::freeze_authority = collection_mint,
+        seeds = [b"collection_mint".as_ref()],
+        bump
+    )]
+    pub collection_mint: InterfaceAccount<'info, Mint>,
+
+    #[account(
+        init,
+        payer = payer,
+        token::mint = collection_mint,
+        token::authority = collection_token_account,
+        seeds = [b"collection_associated_token".as_ref()],
+        bump
+    )]
+    pub collection_token_account: InterfaceAccount<'info, TokenAccount>,
+
+    #[account(
+        mut,
+        seeds = [b"metadata", token_metadata_program.key().as_ref(), collection_mint.key().as_ref()],
+        bump,
+        seeds::program = token_metadata_program.key()
+    )]
+    /// CHECK: this account is checked by the metadata smart contract
+    pub metadata: UncheckedAccount<'info>,
+
+    #[account(
+        mut,
+        seeds = [b"metadata", token_metadata_program.key().as_ref(), collection_mint.key().as_ref(), b"edition"],
+        bump,
+        seeds::program = token_metadata_program.key()
+    )]
+    /// CHECK: this account is checked by the metadata smart contract
+    pub master_edition: UncheckedAccount<'info>,
+
+    pub token_metadata_program: Program<'info, Metadata>,
+    pub associated_token: Program<'info, AssociatedToken>,
+    pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
 }
 
