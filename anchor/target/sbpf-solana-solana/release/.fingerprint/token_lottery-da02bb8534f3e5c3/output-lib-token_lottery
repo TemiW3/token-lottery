@@ -1,0 +1,2 @@
+Error: Function _ZN103_$LT$token_lottery..BuyTicket$u20$as$u20$anchor_lang..Accounts$LT$token_lottery..BuyTicketBumps$GT$$GT$12try_accounts17he88caa825286c9c7E Stack offset of 4216 exceeded max offset of 4096 by 120 bytes, please minimize large stack variables. Estimated function frame size: 4480 bytes. Exceeding the maximum stack offset may cause undefined behavior during execution.
+
