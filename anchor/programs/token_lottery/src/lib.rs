@@ -40,6 +40,8 @@ pub const URI: &str = "https://raw.githubusercontent.com/TemiW3/token-lottery/re
 #[program]
 pub mod token_lottery {
 
+    use switchboard_on_demand::RandomnessAccountData;
+
     use super::*;
 
     pub fn initialize_config(ctx: Context<Initialize>, start: u64, end: u64, price: u64) -> Result<()> {
@@ -238,6 +240,30 @@ pub mod token_lottery {
         Ok(())
     }
 
+    pub fn commit_randomness(ctx: Context<CommitRandomness>) -> Result<()> {
+        let clock = Clock::get()?;
+        let token_lottery = &mut ctx.accounts.token_lottery;
+
+        if ctx.accounts.payer.key() != token_lottery.authority {
+            return Err(TokenLotteryError::NotAuthorized.into());
+        }
+
+        let randomness_data = RandomnessAccountData::parse(
+            ctx.accounts.randomness_account.data.borrow()).unwrap(); // Parse the randomness data
+        
+        if randomness_data.seed_slot != clock.slot - 1{
+            return Err(TokenLotteryError::RandomnessAlreadyRevealed.into());
+        }
+
+        token_lottery.randomness_account = ctx.accounts.randomness_account.key();
+
+        
+
+
+        Ok(())
+    }
+
+
 }
 
 #[derive(Accounts)]
@@ -394,6 +420,25 @@ pub struct BuyTicket<'info> {
     pub rent: Sysvar<'info, Rent>,
 
 }
+
+#[derive(Accounts)]
+pub struct CommitRandomness<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+
+    #[account(
+        mut,
+        seeds = [b"token_lottery".as_ref()],
+        bump = token_lottery.bump,
+    )]
+    pub token_lottery: Account<'info, Tokenlottery>,
+
+
+    /// CHECK: this account is checked by the Switchboard smart contract 
+    pub randomness_account: UncheckedAccount<'info>,
+    pub system_program: Program<'info, System>,
+}
+
 #[account]
 #[derive(InitSpace)]
 pub struct Tokenlottery {
@@ -413,4 +458,8 @@ pub struct Tokenlottery {
 pub enum TokenLotteryError {
     #[msg("The lottery is not currently open.")]
     LotteryNotOpen,
+    #[msg("You are not authorized to perform this action.")]
+    NotAuthorized,
+    #[msg("Randomness has already been revealed for this lottery.")]
+    RandomnessAlreadyRevealed,
 }

@@ -328,6 +328,48 @@
       "args": []
     },
     {
+      "name": "commit_randomness",
+      "discriminator": [
+        146,
+        52,
+        195,
+        220,
+        79,
+        30,
+        53,
+        26
+      ],
+      "accounts": [
+        {
+          "name": "token_lottery",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  108,
+                  111,
+                  116,
+                  116,
+                  101,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "initialize_config",
       "discriminator": [
         208,
