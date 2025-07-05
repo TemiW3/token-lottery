@@ -1,1 +1,0 @@
-/Users/temiloluwawilliams/Documents/token-lottery/anchor/target/sbpf-solana-solana/release/libtoken_lottery.rlib: /Users/temiloluwawilliams/Documents/token-lottery/anchor/programs/token_lottery/src/lib.rs

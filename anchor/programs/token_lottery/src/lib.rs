@@ -40,7 +40,7 @@ pub const URI: &str = "https://raw.githubusercontent.com/TemiW3/token-lottery/re
 #[program]
 pub mod token_lottery {
 
-    use switchboard_on_demand::RandomnessAccountData;
+    // use switchboard_on_demand::RandomnessAccountData;
 
     use super::*;
 
@@ -240,28 +240,28 @@ pub mod token_lottery {
         Ok(())
     }
 
-    pub fn commit_randomness(ctx: Context<CommitRandomness>) -> Result<()> {
-        let clock = Clock::get()?;
-        let token_lottery = &mut ctx.accounts.token_lottery;
+    // pub fn commit_randomness(ctx: Context<CommitRandomness>) -> Result<()> {
+    //     let clock = Clock::get()?;
+    //     let token_lottery = &mut ctx.accounts.token_lottery;
 
-        if ctx.accounts.payer.key() != token_lottery.authority {
-            return Err(TokenLotteryError::NotAuthorized.into());
-        }
+    //     if ctx.accounts.payer.key() != token_lottery.authority {
+    //         return Err(TokenLotteryError::NotAuthorized.into());
+    //     }
 
-        let randomness_data = RandomnessAccountData::parse(
-            ctx.accounts.randomness_account.data.borrow()).unwrap(); // Parse the randomness data
+    //     let randomness_data = RandomnessAccountData::parse(
+    //         ctx.accounts.randomness_account.data.borrow()).unwrap(); // Parse the randomness data
         
-        if randomness_data.seed_slot != clock.slot - 1{
-            return Err(TokenLotteryError::RandomnessAlreadyRevealed.into());
-        }
+    //     if randomness_data.seed_slot != clock.slot - 1{
+    //         return Err(TokenLotteryError::RandomnessAlreadyRevealed.into());
+    //     }
 
-        token_lottery.randomness_account = ctx.accounts.randomness_account.key();
+    //     token_lottery.randomness_account = ctx.accounts.randomness_account.key();
 
         
 
 
-        Ok(())
-    }
+    //     Ok(())
+    // }
 
 
 }
