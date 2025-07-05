@@ -1,4 +1,5 @@
 import * as anchor from '@coral-xyz/anchor'
+import * as sb from '@switchboard-xyz/on-demand'
 import { Program } from '@coral-xyz/anchor'
 import { TokenLottery } from '../target/types/token_lottery'
 import { console } from 'inspector'
@@ -10,6 +11,18 @@ describe('tokenlottery', () => {
   const wallet = provider.wallet as anchor.Wallet
 
   const program = anchor.workspace.TokenLottery as Program<TokenLottery>
+
+  let switchboardProgram
+  const rngKp = anchor.web3.Keypair.generate()
+
+  before('Load switchboard program', async () => {
+    const switchboardIDL = (await anchor.Program.fetchIdl(sb.ON_DEMAND_MAINNET_PID, {
+      connection: new anchor.web3.Connection(
+        'https://mainnet.helius-rpc.com/?api-key=792d0c03-a2b0-469e-b4ad-1c3f2308158c',
+      ),
+    })) as anchor.Idl
+    switchboardProgram = new anchor.Program(switchboardIDL, provider)
+  })
 
   async function buyTicket() {
     const buyTicket = await program.methods
@@ -85,5 +98,10 @@ describe('tokenlottery', () => {
     console.log('Init Lottery Signature:', initLotterySignature)
 
     await buyTicket()
+    await buyTicket()
+    await buyTicket()
+    await buyTicket()
+
+    const queue = new anchor.web3.PublicKey('A43DyUGA7s8eXPxqEjJY6EBu1KKbNgfxF8h17VAHn13w')
   })
 })
