@@ -29,7 +29,7 @@ use switchboard_on_demand::accounts::RandomnessAccountData;
 
 
 
-declare_id!("7BGduEL66H36gUVr83ReQ6E1bLhSrWxhKJZKUoQ8vqH9");
+declare_id!("BTryNPEw1YCsJ5f3SSKLWmCfZeds5QMqv2YcSvUSVZxt");
 
 #[constant]
 pub const NAME: &str = "Token Lottery Ticket #";
@@ -257,9 +257,6 @@ pub mod token_lottery {
 
         token_lottery.randomness_account = ctx.accounts.randomness_account.key();
 
-        
-
-
         Ok(())
     }
 
@@ -365,9 +362,6 @@ pub struct BuyTicket<'info> {
         associated_token::token_program = token_program,
     )]
     pub destination: InterfaceAccount<'info, TokenAccount>,
-
-    
-    
 
      #[account(
         mut,
