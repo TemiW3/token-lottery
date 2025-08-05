@@ -216,5 +216,25 @@ describe('tokenlottery', () => {
 
     const revealSignature = await anchor.web3.sendAndConfirmTransaction(provider.connection, revealTx, [wallet.payer])
     console.log('revealSignature ', revealSignature)
+
+    const claimPrizeIx = await program.methods
+      .claimPrize()
+      .accounts({
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .instruction()
+
+    const claimBlockhashWithContext = await provider.connection.getLatestBlockhash()
+    const claimTx = new anchor.web3.Transaction({
+      feePayer: provider.wallet.publicKey,
+      blockhash: claimBlockhashWithContext.blockhash,
+      lastValidBlockHeight: claimBlockhashWithContext.lastValidBlockHeight,
+    }).add(claimPrizeIx)
+
+    const claimSignature = await anchor.web3.sendAndConfirmTransaction(provider.connection, claimTx, [wallet.payer], {
+      skipPreflight: true,
+    })
+
+    console.log('claimSignature ', claimSignature)
   }, 300000)
 })

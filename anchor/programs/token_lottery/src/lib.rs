@@ -5,21 +5,9 @@ use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken, 
     metadata::{
-        Metadata, 
-        create_metadata_accounts_v3, 
-        CreateMetadataAccountsV3, 
-        create_master_edition_v3, 
-        CreateMasterEditionV3, 
-        sign_metadata, 
-        SignMetadata, 
-        set_and_verify_sized_collection_item, 
-        SetAndVerifySizedCollectionItem}, 
+        create_master_edition_v3, create_metadata_accounts_v3, set_and_verify_sized_collection_item, sign_metadata, CreateMasterEditionV3, CreateMetadataAccountsV3, Metadata, MetadataAccount, SetAndVerifySizedCollectionItem, SignMetadata}, 
     token_interface::{
-        Mint, 
-        TokenAccount, 
-        TokenInterface,
-        mint_to, 
-        MintTo}};
+        mint_to, Mint, MintTo, TokenAccount, TokenInterface}};
 use anchor_spl::metadata::mpl_token_metadata::types::{CollectionDetails, Creator, DataV2};
 use anchor_lang::solana_program::clock;
 use anchor_lang::system_program;
@@ -294,6 +282,27 @@ pub mod token_lottery {
 
         Ok(())
     }
+
+    pub fn claim_prize(ctx: Context<ClaimWinnings>) -> Result<()> {
+        require!(ctx.accounts.token_lottery.winner_chosen, TokenLotteryError::WinnerNotChosen);
+        require!(ctx.accounts.ticket_metadata.collection.as_ref().unwrap().verified, TokenLotteryError::NotVerified);
+        require!(ctx.accounts.ticket_metadata.collection.as_ref().unwrap().key == ctx.accounts.collection_mint.key(), TokenLotteryError::IncorrectTicket);
+
+        let ticket_name= NAME.to_owned() + ctx.accounts.token_lottery.winner.to_string().as_str();
+        let metadata_name = ctx.accounts.ticket_metadata.name.replace("\u{0}", "");
+
+        require!(ticket_name == metadata_name, TokenLotteryError::IncorrectTicket);
+        require!(ctx.accounts.ticket_account.amount > 0, TokenLotteryError::NoTicket);
+
+        **ctx.accounts.token_lottery.to_account_info().try_borrow_mut_lamports()? -= ctx.accounts.token_lottery.lottery_pot;
+        **ctx.accounts.payer.to_account_info().try_borrow_mut_lamports()? += ctx.accounts.token_lottery.lottery_pot;
+
+        msg!("Prize claimed by: {}", ctx.accounts.payer.key());
+
+        ctx.accounts.token_lottery.lottery_pot = 0; // Reset the lottery pot after claiming
+
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -484,6 +493,55 @@ pub struct RevealWinner<'info> {
     pub system_program: Program<'info, System>,
 }
 
+#[derive(Accounts)]
+pub struct ClaimWinnings<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+
+    #[account(
+        mut,
+        seeds = [b"token_lottery".as_ref()],
+        bump = token_lottery.bump,
+    )]
+    pub token_lottery: Account<'info, Tokenlottery>,
+
+    #[account(
+        seeds = [token_lottery.winner.to_le_bytes().as_ref()],
+        bump,
+    )]
+    pub ticket_mint: InterfaceAccount<'info, Mint>,
+
+    #[account(
+        seeds = [b"collection_mint".as_ref()],
+        bump,
+    )]
+    pub collection_mint: InterfaceAccount<'info, Mint>,
+
+    #[account(
+        seeds = [b"metadata", token_metadata_program.key().as_ref(), ticket_mint.key().as_ref()],
+        bump,
+        seeds::program = token_metadata_program.key()
+    )]
+    pub ticket_metadata: Account<'info, MetadataAccount>,
+
+    #[account(
+        associated_token::mint = ticket_mint,
+        associated_token::authority = payer,
+        associated_token::token_program = token_program,
+    )]
+    pub ticket_account: InterfaceAccount<'info, TokenAccount>,
+
+    #[account(
+        seeds = [b"metadata", token_metadata_program.key().as_ref(), collection_mint.key().as_ref()],
+        bump,
+        seeds::program = token_metadata_program.key()
+    )]
+    pub collection_metadata: Account<'info, MetadataAccount>,
+
+    pub token_program: Interface<'info, TokenInterface>,
+    pub token_metadata_program: Program<'info, Metadata>,
+}
+
 #[account]
 #[derive(InitSpace)]
 pub struct Tokenlottery {
@@ -513,4 +571,12 @@ pub enum TokenLotteryError {
     WinnerAlreadyChosen,
     #[msg("The randomness value has not been resolved yet.")]
     RandomnessNotResolved,
+    #[msg("The winner has not been chosen yet.")]
+    WinnerNotChosen,
+    #[msg("The ticket is not verified or does not match the expected collection.")]
+    NotVerified,
+    #[msg("The ticket does not match the expected name.")]
+    IncorrectTicket,
+    #[msg("You do not have a ticket to claim the prize.")]
+    NoTicket,
 }
