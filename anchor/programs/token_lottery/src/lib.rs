@@ -260,7 +260,38 @@ pub mod token_lottery {
         Ok(())
     }
 
+    pub fn reveal_winner(ctx: Context<RevealWinner>) -> Result<()> {
+        let clock = Clock::get()?;
 
+
+        let token_lottery = &mut ctx.accounts.token_lottery;
+
+        if ctx.accounts.payer.key() != token_lottery.authority {
+            return Err(TokenLotteryError::NotAuthorized.into());
+        }
+
+        if ctx.accounts.randomness_account.key() != token_lottery.randomness_account {
+            return Err(TokenLotteryError::IncorrectRandonessAccount.into());
+        }
+
+        if clock.slot < token_lottery.end_time {
+            return Err(TokenLotteryError::LotteryNotOpen.into());
+        }
+
+        require!(!token_lottery.winner_chosen, TokenLotteryError::WinnerAlreadyChosen);
+
+        let randomness_data = RandomnessAccountData::parse(
+            ctx.accounts.randomness_account.data.borrow()).unwrap(); // Parse the randomness data
+
+        let reveal_random_value= randomness_data.get_value(&clock) 
+        .map_err(|_| TokenLotteryError::RandomnessNotResolved)?;
+        let winner_index = reveal_random_value[0] as u64 % token_lottery.ticket_count;
+
+        token_lottery.winner = winner_index;
+        token_lottery.winner_chosen = true;
+
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -433,6 +464,24 @@ pub struct CommitRandomness<'info> {
     pub system_program: Program<'info, System>,
 }
 
+#[derive(Accounts)]
+pub struct RevealWinner<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+
+    #[account(
+        mut,
+        seeds = [b"token_lottery".as_ref()],
+        bump = token_lottery.bump,
+    )]
+    pub token_lottery: Account<'info, Tokenlottery>,
+
+    /// CHECK: The account's data is validated manually within the handler.
+    pub randomness_account: UncheckedAccount<'info>,
+
+    pub system_program: Program<'info, System>,
+}
+
 #[account]
 #[derive(InitSpace)]
 pub struct Tokenlottery {
@@ -456,4 +505,10 @@ pub enum TokenLotteryError {
     NotAuthorized,
     #[msg("Randomness has already been revealed for this lottery.")]
     RandomnessAlreadyRevealed,
+    #[msg("The provided randomness account does not match the expected account.")]
+    IncorrectRandonessAccount,
+    #[msg("The winner has already been chosen for this lottery.")]
+    WinnerAlreadyChosen,
+    #[msg("The randomness value has not been resolved yet.")]
+    RandomnessNotResolved,
 }
