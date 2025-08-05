@@ -57,8 +57,10 @@ describe('tokenlottery', () => {
   }
 
   it('Should test token lottery', async () => {
+    const slot = await provider.connection.getSlot()
+    const endSlot = slot + 20
     const initConfigInstruction = await program.methods
-      .initializeConfig(new anchor.BN(0), new anchor.BN(1922712025), new anchor.BN(10000))
+      .initializeConfig(new anchor.BN(slot), new anchor.BN(endSlot), new anchor.BN(10000))
       .instruction()
 
     const blockhashWithContext = await provider.connection.getLatestBlockhash()
@@ -182,5 +184,37 @@ describe('tokenlottery', () => {
     const commitSignature = await anchor.web3.sendAndConfirmTransaction(provider.connection, commitTx, [wallet.payer])
 
     console.log('commitsignature ', commitSignature)
-  })
+
+    const sbRevealIx = await randomness.revealIx()
+
+    const revealWinnerIx = await program.methods
+      .revealWinner()
+      .accounts({
+        randomnessAccount: randomness.pubkey,
+      })
+      .instruction()
+
+    const revealBlockhashWithContext = await provider.connection.getLatestBlockhash()
+
+    const revealTx = new anchor.web3.Transaction({
+      feePayer: provider.wallet.publicKey,
+      blockhash: revealBlockhashWithContext.blockhash,
+      lastValidBlockHeight: revealBlockhashWithContext.lastValidBlockHeight,
+    })
+      .add(sbRevealIx)
+      .add(revealWinnerIx)
+
+    let currentSlot = 0
+
+    while (currentSlot < endSlot) {
+      const slot = await provider.connection.getSlot()
+      if (slot > currentSlot) {
+        currentSlot = slot
+        console.log('Current Slot:', currentSlot)
+      }
+    }
+
+    const revealSignature = await anchor.web3.sendAndConfirmTransaction(provider.connection, revealTx, [wallet.payer])
+    console.log('revealSignature ', revealSignature)
+  }, 300000)
 })

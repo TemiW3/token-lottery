@@ -285,9 +285,11 @@ pub mod token_lottery {
 
         let reveal_random_value= randomness_data.get_value(&clock) 
         .map_err(|_| TokenLotteryError::RandomnessNotResolved)?;
-        let winner_index = reveal_random_value[0] as u64 % token_lottery.ticket_count;
+        let winner = reveal_random_value[0] as u64 % token_lottery.ticket_count;
 
-        token_lottery.winner = winner_index;
+        msg!("Winner chosen: {}", winner);
+
+        token_lottery.winner = winner;
         token_lottery.winner_chosen = true;
 
         Ok(())
